@@ -1,27 +1,36 @@
 package br.edu.unijui.lp3.model;
 
 import java.time.LocalDateTime;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Film {
-	private String filmId;
+	
+	private int filmId;
 	private String title;
-	private long description;
+	private String description;
 	private short year;
-	private int languageId;
-	private int originalLanguageId;
+	private Language language;
+	private Language originalLanguage;
+	private List<Category> categories;
+	private List<Actor> actors;
 	private int rentalDuration;
 	private double rentalRate;
 	private int length;
-	private int replaceCost;
+	private double replaceCost;
 	private Rating rating;
 	private String specialFeatures;
 	private LocalDateTime lastUpadate;
 	
-	public String getFilmId() {
+	public Film() {
+		categories = new LinkedList<Category>();
+	}
+	
+	public int getFilmId() {
 		return filmId;
 	}
 
-	public void setFilmId(String filmId) {
+	public void setFilmId(int filmId) {
 		this.filmId = filmId;
 	}
 
@@ -33,11 +42,11 @@ public class Film {
 		this.title = title;
 	}
 
-	public long getDescription() {
+	public String getDescription() {
 		return description;
 	}
 
-	public void setDescription(long description) {
+	public void setDescription(String description) {
 		this.description = description;
 	}
 
@@ -49,20 +58,52 @@ public class Film {
 		this.year = year;
 	}
 
-	public int getLanguageId() {
-		return languageId;
+	public Language getLanguage() {
+		return language;
 	}
 
-	public void setLanguageId(int languageId) {
-		this.languageId = languageId;
+	public void setLanguage(Language language) {
+		this.language = language;
 	}
 
-	public int getOriginalLanguageId() {
-		return originalLanguageId;
+	public Language getOriginalLanguage() {
+		return originalLanguage;
 	}
 
-	public void setOriginalLanguageId(int originalLanguageId) {
-		this.originalLanguageId = originalLanguageId;
+	public void setOriginalLanguage(Language originalLanguage) {
+		this.originalLanguage = originalLanguage;
+	}
+	
+	public void addCategory(Category category) {
+		categories.add(category);
+	}
+	
+	public List<Category> getCategories() {
+		return categories;
+	}
+	
+	public void removeCategory(Category category) {
+		categories.remove(category);
+	}
+	
+	public void setCategories(List<Category> categories) {
+		this.categories = categories;
+	}
+	
+	public void addActor(Actor actor) {
+		actors.add(actor);
+	}
+	
+	public List<Actor> getActors() {
+		return actors;
+	}
+	
+	public void removeActor(Actor actor) {
+		actors.remove(actor);
+	}
+	
+	public void setActors(List<Actor> actors) {
+		this.actors = actors;
 	}
 
 	public int getRentalDuration() {
@@ -89,11 +130,11 @@ public class Film {
 		this.length = length;
 	}
 
-	public int getReplaceCost() {
+	public double getReplaceCost() {
 		return replaceCost;
 	}
 
-	public void setReplaceCost(int replaceCost) {
+	public void setReplaceCost(double replaceCost) {
 		this.replaceCost = replaceCost;
 	}
 
@@ -122,10 +163,22 @@ public class Film {
 	}
 
 	public enum Rating {
-		PG13,
-		G,
-		PG,
-		R,
-		NC17,
+		G ("G"),
+		PG ("PG"),
+		PG13 ("PG-13"),
+		R ("R"),
+		NC17 ("NC-17");
+		
+		private String descricao;
+		
+		private Rating(String descricao) {
+			this.descricao = descricao;
+		}
+		
+		@Override
+		public String toString() {
+			return descricao;
+		}
 	}
+	
 }
