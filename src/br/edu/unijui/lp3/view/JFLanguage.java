@@ -63,8 +63,8 @@ public class JFLanguage extends JFrame {
 		jtfLastUpdate = new JTextField();
 		jtfLastUpdate.setEditable(false);
 		jtfLastUpdate.setVisible(false);
-		jbNovo = new JButton("Nome", new ImageIcon(getClass().getResource("img").getPath().concat("/new32x32.png")));
-		jbNovo.addActionListener(new ButtonNewActionListener());
+		jbNovo = new JButton("Novo", new ImageIcon(getClass().getResource("img").getPath().concat("/new32x32.png")));
+		jbNovo.addActionListener(new ButtonNovoActionListener());
 		jbSalvarAtualizar = new JButton("Gravar", new ImageIcon(getClass().getResource("img").getPath().concat("/save32x32.png")));
 		jbSalvarAtualizar.addActionListener(new ButtonSalvarAtualizarActionListener());
 		jbDeletar = new JButton("Deletar", new ImageIcon(getClass().getResource("img").getPath().concat("/delete32x32.png")));
@@ -94,7 +94,7 @@ public class JFLanguage extends JFrame {
 		jpCadastro.add(new JLabel("Nome"));
 		jpCadastro.add(jtfName, new CC().width("100%").wrap());
 		jpCadastro.add(jlLastUpdate, new CC().spanX(3));
-		jpCadastro.add(jtfLastUpdate, new CC().width("150!").spanX().wrap());
+		jpCadastro.add(jtfLastUpdate, new CC().width("100!").spanX().wrap());
 		jpCadastro.add(new JLabel(), new CC().height("100%").wrap());
 		jpCadastro.add(jbNovo, new CC().spanX().split().width("120!").height("45!").alignX("center"));
 		jpCadastro.add(jbSalvarAtualizar, new CC().width("120!").height("45!"));
@@ -140,7 +140,7 @@ public class JFLanguage extends JFrame {
 		jlLastUpdate.setVisible(false);
 		jtfLastUpdate.setText("");
 		jtfLastUpdate.setVisible(false);
-		jbSalvarAtualizar.setText("Save");
+		jbSalvarAtualizar.setText("Gravar");
 		jbDeletar.setEnabled(false);
 	}
 	
@@ -150,14 +150,14 @@ public class JFLanguage extends JFrame {
 		jtfId.setVisible(true);
 		jtfName.setText(language.getName());
 		jlLastUpdate.setVisible(true);
-		jtfLastUpdate.setText(language.getLastUpdate().format(DateTimeFormatter.ofPattern("dd/MM/YYYY hh:mm")));
+		jtfLastUpdate.setText(language.getLastUpdate().format(DateTimeFormatter.ofPattern("dd/MM/YYYY HH:mm")));
 		jtfLastUpdate.setVisible(true);
 		jbSalvarAtualizar.setText("Atualizar");
 		jbDeletar.setEnabled(true);
 		jtpCadastroPesquisa.setSelectedIndex(0);
 	}
 	
-	private class ButtonNewActionListener implements ActionListener {
+	private class ButtonNovoActionListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			clearFields();
@@ -167,14 +167,18 @@ public class JFLanguage extends JFrame {
 	private class ButtonSalvarAtualizarActionListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if (JOptionPaneUtils.showQuestionMessage("Deseja " + jbSalvarAtualizar.getText().toLowerCase() + " o registro?")) {
+			String name = jtfName.getText().trim();
+			if (name.isEmpty()) {
+				JOptionPaneUtils.showWarning("O campo 'Nome' é obrigatório!");
+				return;
+			} else if (JOptionPaneUtils.showQuestionMessage("Deseja " + jbSalvarAtualizar.getText().toLowerCase() + " o registro?")) {
 				try {
 					if (language == null) {
 						language = new Language();
-						language.setName(jtfName.getText());
+						language.setName(name);
 						connection.insert(language);
 					} else {
-						language.setName(jtfName.getText());
+						language.setName(name);
 						connection.update(language);
 					}
 					JOptionPaneUtils.showMessage("Registro " + (jbSalvarAtualizar.getText().equals("Gravar") ? "gravado" : "atualizado")
