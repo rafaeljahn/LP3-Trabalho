@@ -8,24 +8,24 @@ import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
 
-import br.edu.unijui.lp3.model.Language;
+import br.edu.unijui.lp3.model.Category;
 
-public class LanguageConnection extends AbstractConnection<Language> {
+public class CategoryConnection extends AbstractConnection<Category> {
 	
-	private final String INSERT = "INSERT INTO language (name) VALUES (?)";
-	private final String DELETE = "DELETE FROM language WHERE language_id = ?";
-	private final String UPDATE = "UPDATE language SET name = ? WHERE language_id = ?";
-	private final String GET = "SELECT * FROM language WHERE language_id = ?";
-	private final String LIST = "SELECT * FROM language ORDER BY name";
+	private final String INSERT = "INSERT INTO category (name) VALUES (?)";
+	private final String DELETE = "DELETE FROM category WHERE category_id = ?";
+	private final String UPDATE = "UPDATE category SET name = ? WHERE category_id = ?";
+	private final String GET = "SELECT * FROM category WHERE category_id = ?";
+	private final String LIST = "SELECT * FROM category ORDER BY name";
 	
 	@Override
-	public void insert(Language language) throws SQLException {
+	public void insert(Category category) throws SQLException {
 		Connection connection = null;
 		PreparedStatement ppst = null;
 		try {
 			connection = getConnection();
 			ppst = connection.prepareStatement(INSERT);
-			ppst.setString(1, language.getName());
+			ppst.setString(1, category.getName());
 			ppst.execute();
 		} catch (SQLException e) {
 			throw e;
@@ -38,20 +38,20 @@ public class LanguageConnection extends AbstractConnection<Language> {
 					connection.close();
 				}
 			} catch (Exception e) {
-				System.out.println("Erro ao fechar conexão!");
+				System.out.println("Erro ao fechar a conexão!");
 				e.printStackTrace();
 			}
 		}
 	}
-	
+		
 	@Override
-	public void delete(Language language) throws SQLException {
+	public void delete(Category category) throws SQLException {
 		Connection connection = null;
 		PreparedStatement ppst = null;
 		try {
 			connection = getConnection();
 			ppst = connection.prepareStatement(DELETE);
-			ppst.setInt(1, language.getLanguageId());
+			ppst.setInt(1, category.getCategoryId());
 			ppst.execute();
 		} catch (SQLException e) {
 			throw e;
@@ -64,34 +64,7 @@ public class LanguageConnection extends AbstractConnection<Language> {
 					connection.close();
 				}
 			} catch (Exception e) {
-				System.out.println("Erro ao fechar conexão!");
-				e.printStackTrace();
-			}
-		}
-	}
-	
-	@Override
-	public void update(Language language) throws SQLException {
-		Connection connection = null;
-		PreparedStatement ppst = null;
-		try {
-			connection = getConnection();
-			ppst = connection.prepareStatement(UPDATE);
-			ppst.setString(1, language.getName());
-			ppst.setInt(2, language.getLanguageId());
-			ppst.execute();
-		} catch (SQLException e) {
-			throw e;
-		} finally {
-			try {
-				if (ppst != null) {
-					ppst.close();
-				}
-				if (connection != null) {
-					connection.close();
-				}
-			} catch (Exception e) {
-				System.out.println("Erro ao fechar conexão!");
+				System.out.println("Erro ao fechar a conexão!");
 				e.printStackTrace();
 			}
 		}
@@ -99,23 +72,50 @@ public class LanguageConnection extends AbstractConnection<Language> {
 	}
 	
 	@Override
-	public Language get(Language language) throws SQLException {
-		if (language != null && language.getLanguageId() > 0) {
+	public void update(Category category) throws SQLException {
+		Connection connection = null;
+		PreparedStatement ppst = null;
+		try {
+			connection = getConnection();
+			ppst = connection.prepareStatement(UPDATE);
+			ppst.setString(1, category.getName());
+			ppst.setInt(2, category.getCategoryId());
+			ppst.execute();
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			try {
+				if (ppst != null) {
+					ppst.close();
+				}
+				if (connection != null) {
+					connection.close();
+				}
+			} catch (Exception e) {
+				System.out.println("Erro ao fechar a conexão!");
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	@Override
+	public Category get(Category category) throws SQLException {
+		if (category != null && category.getCategoryId() > 0) {
 			Connection connection = null;
 			PreparedStatement ppst = null;
 			ResultSet rs = null;
 			try {
 				connection = getConnection();
 				ppst = connection.prepareStatement(GET);
-				ppst.setInt(1, language.getLanguageId());
+				ppst.setInt(1, category.getCategoryId());
 				rs = ppst.executeQuery();
 				rs.next();
 				
-				language = new Language();
-				language.setLanguageId(rs.getInt(1));
-				language.setName(rs.getString(2));
-				language.setLastUpdate(rs.getTimestamp(3).toLocalDateTime());
-				return language;
+				category = new Category();
+				category.setCategoryId(rs.getInt(1));
+				category.setName(rs.getString(2));
+				category.setLastUpdate(rs.getTimestamp(3).toLocalDateTime());
+				return category;
 			} catch (SQLException e) {
 				throw e;
 			} finally {
@@ -130,17 +130,18 @@ public class LanguageConnection extends AbstractConnection<Language> {
 						connection.close();
 					}
 				} catch (Exception e) {
-					System.out.println("Erro ao fechar conexão!");
+					System.out.println("Erro ao fechar a conexão!");
 					e.printStackTrace();
 				}
 			}
+			
 		}
 		return null;
 	}
 	
 	@Override
-	public List<Language> list() throws SQLException {
-		List<Language> list = new LinkedList<Language>();
+	public List<Category> list() throws SQLException {
+		List<Category> list = new LinkedList<Category>();
 		Connection connection = null;
 		Statement st = null;
 		ResultSet rs = null;
@@ -149,14 +150,14 @@ public class LanguageConnection extends AbstractConnection<Language> {
 			connection = getConnection();
 			st = connection.createStatement();
 			rs = st.executeQuery(LIST);
-
-			Language language;
+			
+			Category category;
 			while (rs.next()) {
-				language = new Language();
-				language.setLanguageId(rs.getInt(1));
-				language.setName(rs.getString(2));
-				language.setLastUpdate(rs.getTimestamp(3).toLocalDateTime());
-				list.add(language);
+				category = new Category();
+				category.setCategoryId(rs.getInt(1));
+				category.setName(rs.getString(2));
+				category.setLastUpdate(rs.getTimestamp(3).toLocalDateTime());
+				list.add(category);
 			}
 		} catch (SQLException e) {
 			throw e;
@@ -172,7 +173,7 @@ public class LanguageConnection extends AbstractConnection<Language> {
 					connection.close();
 				}
 			} catch (Exception e) {
-				System.out.println("Erro ao fechar conexão!");
+				System.out.println("Erro ao fechar a conexão!");
 				e.printStackTrace();
 			}
 		}

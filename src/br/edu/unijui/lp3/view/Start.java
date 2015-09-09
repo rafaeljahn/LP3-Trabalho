@@ -10,7 +10,7 @@ public class Start {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		new JFLanguage().setVisible(true);
+		new JFFilm().setVisible(true);
 	}
 	
 }

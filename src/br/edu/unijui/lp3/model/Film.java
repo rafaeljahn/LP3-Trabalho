@@ -12,17 +12,18 @@ public class Film {
 	private short year;
 	private Language language;
 	private Language originalLanguage;
-	private List<Category> categories;
-	private List<Actor> actors;
-	private int rentalDuration;
+	private short rentalDuration;
 	private double rentalRate;
-	private int length;
+	private short length;
 	private double replaceCost;
 	private Rating rating;
 	private String specialFeatures;
 	private LocalDateTime lastUpadate;
+	private List<Actor> actors;
+	private List<Category> categories;
 	
 	public Film() {
+		actors = new LinkedList<Actor>();
 		categories = new LinkedList<Category>();
 	}
 	
@@ -73,44 +74,12 @@ public class Film {
 	public void setOriginalLanguage(Language originalLanguage) {
 		this.originalLanguage = originalLanguage;
 	}
-	
-	public void addCategory(Category category) {
-		categories.add(category);
-	}
-	
-	public List<Category> getCategories() {
-		return categories;
-	}
-	
-	public void removeCategory(Category category) {
-		categories.remove(category);
-	}
-	
-	public void setCategories(List<Category> categories) {
-		this.categories = categories;
-	}
-	
-	public void addActor(Actor actor) {
-		actors.add(actor);
-	}
-	
-	public List<Actor> getActors() {
-		return actors;
-	}
-	
-	public void removeActor(Actor actor) {
-		actors.remove(actor);
-	}
-	
-	public void setActors(List<Actor> actors) {
-		this.actors = actors;
-	}
 
-	public int getRentalDuration() {
+	public short getRentalDuration() {
 		return rentalDuration;
 	}
 
-	public void setRentalDuration(int rentalDuration) {
+	public void setRentalDuration(short rentalDuration) {
 		this.rentalDuration = rentalDuration;
 	}
 
@@ -122,11 +91,11 @@ public class Film {
 		this.rentalRate = rentalRate;
 	}
 
-	public int getLength() {
+	public short getLength() {
 		return length;
 	}
 
-	public void setLength(int length) {
+	public void setLength(short length) {
 		this.length = length;
 	}
 
@@ -161,6 +130,38 @@ public class Film {
 	public void setLastUpadate(LocalDateTime lastUpadate) {
 		this.lastUpadate = lastUpadate;
 	}
+	
+	public void addActor(Actor actor) {
+		actors.add(actor);
+	}
+	
+	public List<Actor> getActors() {
+		return actors;
+	}
+	
+	public void removeActor(Actor actor) {
+		actors.remove(actor);
+	}
+	
+	public void setActors(List<Actor> actors) {
+		this.actors = actors;
+	}
+	
+	public void addCategory(Category category) {
+		categories.add(category);
+	}
+	
+	public List<Category> getCategories() {
+		return categories;
+	}
+	
+	public void removeCategory(Category category) {
+		categories.remove(category);
+	}
+	
+	public void setCategories(List<Category> categories) {
+		this.categories = categories;
+	}
 
 	public enum Rating {
 		G ("G"),
@@ -178,6 +179,15 @@ public class Film {
 		@Override
 		public String toString() {
 			return descricao;
+		}
+		
+		public static Rating getByDescricao(String descricao) {
+			for (Rating r : values()) {
+				if (r.descricao.equals(descricao)) {
+					return r;
+				}
+			}
+			return null;
 		}
 	}
 	

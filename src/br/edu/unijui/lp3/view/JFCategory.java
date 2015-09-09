@@ -18,8 +18,8 @@ import javax.swing.JTextField;
 
 import com.towel.swing.table.ObjectTableModel;
 
-import br.edu.unijui.lp3.model.Language;
-import br.edu.unijui.lp3.server.LanguageConnection;
+import br.edu.unijui.lp3.model.Category;
+import br.edu.unijui.lp3.server.CategoryConnection;
 import br.edu.unijui.lp3.view.utils.JOptionPaneUtils;
 import br.edu.unijui.lp3.view.utils.JTableUtils;
 import net.miginfocom.layout.CC;
@@ -27,7 +27,7 @@ import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
 
 @SuppressWarnings({"serial", "unchecked"})
-public class JFLanguage extends JFrame {
+public class JFCategory extends JFrame {
 	
 	private JButton jbNovo;
 	private JButton jbSalvarAtualizar;
@@ -35,16 +35,16 @@ public class JFLanguage extends JFrame {
 	private JLabel jlId;
 	private JLabel jlLastUpdate;
 	private JTabbedPane jtpCadastroPesquisa;
-	private JTable jtLanguages;
+	private JTable jtCategories;
 	private JTextField jtfId;
 	private JTextField jtfName;
 	private JTextField jtfLastUpdate;
-	private ObjectTableModel<Language> tmLanguages;
+	private ObjectTableModel<Category> tmCategories;
 	
-	private Language language;
-	private LanguageConnection connection = new LanguageConnection();
+	private Category category;
+	private CategoryConnection connection = new CategoryConnection();
 	
-	public JFLanguage() {
+	public JFCategory() {
 		configureComponents();
 		addComponents();
 	}
@@ -69,9 +69,9 @@ public class JFLanguage extends JFrame {
 		jbDeletar.addActionListener(new ButtonDeletarActionListener());
 		jbDeletar.setEnabled(false);
 		
-		jtLanguages = JTableUtils.createTableLanguages();
-		jtLanguages.addMouseListener(new TableLanguagesMouseAdapter());
-		tmLanguages = (ObjectTableModel<Language>) jtLanguages.getModel();
+		jtCategories = JTableUtils.createTableCategory();
+		jtCategories.addMouseListener(new TableCategoriesMouseAdapter());
+		tmCategories = (ObjectTableModel<Category>) jtCategories.getModel();
 		
 		jtpCadastroPesquisa = new JTabbedPane();
 		jtpCadastroPesquisa.addTab("Cadastro", createPanelCadastro());
@@ -95,14 +95,14 @@ public class JFLanguage extends JFrame {
 	
 	private JPanel createPanelPesquisa() {
 		JPanel jpPesquisa = new JPanel(new MigLayout());
-		jpPesquisa.add(new JScrollPane(jtLanguages), new CC().width("100%").height("100%"));
+		jpPesquisa.add(new JScrollPane(jtCategories), new CC().width("100%").height("100%"));
 		return jpPesquisa;
 	}
 	
 	private void addComponents() {
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setLayout(new MigLayout(new LC().hideMode(3)));
-		setTitle("Linguagens");
+		setTitle("Categorias");
 		
 		add(jtpCadastroPesquisa, new CC().width("400:100%:").height("300:100%:"));
 		
@@ -115,7 +115,7 @@ public class JFLanguage extends JFrame {
 	
 	private void getData() {
 		try {
-			tmLanguages.setData(connection.list());
+			tmCategories.setData(connection.list());
 		} catch (Exception e) {
 			JOptionPaneUtils.showError("Ocorreu um erro ao buscar os dados do banco!");
 			e.printStackTrace();
@@ -123,7 +123,7 @@ public class JFLanguage extends JFrame {
 	}
 	
 	private void clearFields() {
-		language = null;
+		category = null;
 		jlId.setVisible(false);
 		jtfId.setText("");
 		jtfId.setVisible(false);
@@ -137,11 +137,11 @@ public class JFLanguage extends JFrame {
 	
 	private void populateView() {
 		jlId.setVisible(true);
-		jtfId.setText(String.valueOf(language.getLanguageId()));
+		jtfId.setText(String.valueOf(category.getCategoryId()));
 		jtfId.setVisible(true);
-		jtfName.setText(language.getName());
+		jtfName.setText(category.getName());
 		jlLastUpdate.setVisible(true);
-		jtfLastUpdate.setText(language.getLastUpdate().format(DateTimeFormatter.ofPattern("dd/MM/YYYY HH:mm")));
+		jtfLastUpdate.setText(category.getLastUpdate().format(DateTimeFormatter.ofPattern("dd/MM/YYYY HH:mm")));
 		jtfLastUpdate.setVisible(true);
 		jbSalvarAtualizar.setText("Atualizar");
 		jbDeletar.setEnabled(true);
@@ -162,22 +162,23 @@ public class JFLanguage extends JFrame {
 			if (name.isEmpty()) {
 				JOptionPaneUtils.showWarning("O campo 'Nome' é obrigatório!");
 				return;
-			} else if (JOptionPaneUtils.showQuestionMessage("Deseja " + jbSalvarAtualizar.getText().toLowerCase() + " a linguagem?")) {
+			} else if (JOptionPaneUtils.showQuestionMessage("Deseja " + jbSalvarAtualizar.getText().toLowerCase() + " a categoria?")) {
 				try {
-					if (language == null) {
-						language = new Language();
-						language.setName(name);
-						connection.insert(language);
+					if (category == null) {
+						category = new Category();
+						category.setName(name);
+						connection.insert(category);
 					} else {
-						language.setName(name);
-						connection.update(language);
+						category.setName(name);
+						connection.update(category);
 					}
-					JOptionPaneUtils.showMessage("Linguagem " + (jbSalvarAtualizar.getText().equals("Gravar") ? "gravada" : "atualizada")
-							+ " com sucesso!");
+					JOptionPaneUtils.showMessage("Categoria " + (jbSalvarAtualizar.getText().equals("Gravar") ?
+							"gravada" : "atualizada") + " com sucesso!");
 					clearFields();
 					getData();
 				} catch (Exception ex) {
-					JOptionPaneUtils.showError("Não foi possivel " + jbSalvarAtualizar.getText().toLowerCase() + " a linguagem!");
+					JOptionPaneUtils.showError("Não foi possivel " + jbSalvarAtualizar.getText().toLowerCase() +
+							" a categoria!");
 					ex.printStackTrace();
 				}
 			}
@@ -187,25 +188,25 @@ public class JFLanguage extends JFrame {
 	private class ButtonDeletarActionListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if (JOptionPaneUtils.showQuestionMessage("Deseja excluir a linguagem selecionada?")) {
+			if (JOptionPaneUtils.showQuestionMessage("Deseja excluir a categoria selecionado?")) {
 				try {
-					connection.delete(language);
-					JOptionPaneUtils.showMessage("Linguagem excluída com sucesso!");
+					connection.delete(category);
+					JOptionPaneUtils.showMessage("Categoria excluído com sucesso!");
 					clearFields();
 					getData();
 				} catch (Exception ex) {
-					JOptionPaneUtils.showError("Não foi possível excluir a linguagem!");
+					JOptionPaneUtils.showError("Não foi possível excluir a categoria!");
 					ex.printStackTrace();
 				}
 			}
 		}
 	}
 	
-	private class TableLanguagesMouseAdapter extends MouseAdapter {
+	private class TableCategoriesMouseAdapter extends MouseAdapter {
 		@Override
 		public void mouseReleased(MouseEvent e) {
 			if (e.getClickCount() > 1) {
-				language = tmLanguages.getValue(jtLanguages.getSelectedRow());
+				category = tmCategories.getValue(jtCategories.getSelectedRow());
 				populateView();
 			}
 		}

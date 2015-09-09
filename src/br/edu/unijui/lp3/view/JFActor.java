@@ -18,16 +18,17 @@ import javax.swing.JTextField;
 
 import com.towel.swing.table.ObjectTableModel;
 
-import br.edu.unijui.lp3.model.Language;
-import br.edu.unijui.lp3.server.LanguageConnection;
+import br.edu.unijui.lp3.model.Actor;
+import br.edu.unijui.lp3.server.ActorConnection;
 import br.edu.unijui.lp3.view.utils.JOptionPaneUtils;
 import br.edu.unijui.lp3.view.utils.JTableUtils;
+import net.miginfocom.layout.AC;
 import net.miginfocom.layout.CC;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
 
 @SuppressWarnings({"serial", "unchecked"})
-public class JFLanguage extends JFrame {
+public class JFActor extends JFrame {
 	
 	private JButton jbNovo;
 	private JButton jbSalvarAtualizar;
@@ -35,16 +36,17 @@ public class JFLanguage extends JFrame {
 	private JLabel jlId;
 	private JLabel jlLastUpdate;
 	private JTabbedPane jtpCadastroPesquisa;
-	private JTable jtLanguages;
+	private JTable jtActors;
 	private JTextField jtfId;
-	private JTextField jtfName;
+	private JTextField jtfFirstName;
+	private JTextField jtfLastName;
 	private JTextField jtfLastUpdate;
-	private ObjectTableModel<Language> tmLanguages;
+	private ObjectTableModel<Actor> tmActors;
 	
-	private Language language;
-	private LanguageConnection connection = new LanguageConnection();
+	private Actor actor;
+	private ActorConnection connection = new ActorConnection();
 	
-	public JFLanguage() {
+	public JFActor() {
 		configureComponents();
 		addComponents();
 	}
@@ -55,7 +57,8 @@ public class JFLanguage extends JFrame {
 		jtfId = new JTextField();
 		jtfId.setEditable(false);
 		jtfId.setVisible(false);
-		jtfName = new JTextField();
+		jtfFirstName = new JTextField();
+		jtfLastName = new JTextField();
 		jlLastUpdate = new JLabel("Ultima atualização");
 		jlLastUpdate.setVisible(false);
 		jtfLastUpdate = new JTextField();
@@ -69,9 +72,9 @@ public class JFLanguage extends JFrame {
 		jbDeletar.addActionListener(new ButtonDeletarActionListener());
 		jbDeletar.setEnabled(false);
 		
-		jtLanguages = JTableUtils.createTableLanguages();
-		jtLanguages.addMouseListener(new TableLanguagesMouseAdapter());
-		tmLanguages = (ObjectTableModel<Language>) jtLanguages.getModel();
+		jtActors = JTableUtils.createTableActor();
+		jtActors.addMouseListener(new TableActorsMouseAdapter());
+		tmActors = (ObjectTableModel<Actor>) jtActors.getModel();
 		
 		jtpCadastroPesquisa = new JTabbedPane();
 		jtpCadastroPesquisa.addTab("Cadastro", createPanelCadastro());
@@ -79,14 +82,16 @@ public class JFLanguage extends JFrame {
 	}
 	
 	private JPanel createPanelCadastro() {
-		JPanel jpCadastro = new JPanel(new MigLayout(new LC().hideMode(3)));
-		jpCadastro.add(jlId);
+		JPanel jpCadastro = new JPanel(new MigLayout(new LC().hideMode(3), new AC().align("right")));
+		jpCadastro.add(jlId, new CC().split(2));
 		jpCadastro.add(jtfId, new CC().width("35!"));
 		jpCadastro.add(new JLabel("Nome"));
-		jpCadastro.add(jtfName, new CC().width("100%").wrap());
-		jpCadastro.add(jlLastUpdate, new CC().spanX(3));
-		jpCadastro.add(jtfLastUpdate, new CC().width("95!").spanX().wrap());
-		jpCadastro.add(new JLabel(), new CC().height("100%").wrap());
+		jpCadastro.add(jtfFirstName, new CC().width("100%").wrap());
+		jpCadastro.add(new JLabel("Sobrenome"), new CC());
+		jpCadastro.add(jtfLastName, new CC().width("100%").spanX().split());
+		jpCadastro.add(jlLastUpdate);
+		jpCadastro.add(jtfLastUpdate, new CC().width("95!"));
+		jpCadastro.add(new JLabel(), new CC().newline().height("100%").wrap());
 		jpCadastro.add(jbNovo, new CC().spanX().split().width("120!").height("45!").alignX("center"));
 		jpCadastro.add(jbSalvarAtualizar, new CC().width("120!").height("45!"));
 		jpCadastro.add(jbDeletar, new CC().width("120!").height("45!"));
@@ -95,14 +100,14 @@ public class JFLanguage extends JFrame {
 	
 	private JPanel createPanelPesquisa() {
 		JPanel jpPesquisa = new JPanel(new MigLayout());
-		jpPesquisa.add(new JScrollPane(jtLanguages), new CC().width("100%").height("100%"));
+		jpPesquisa.add(new JScrollPane(jtActors), new CC().width("100%").height("100%"));
 		return jpPesquisa;
 	}
 	
 	private void addComponents() {
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-		setLayout(new MigLayout(new LC().hideMode(3)));
-		setTitle("Linguagens");
+		setLayout(new MigLayout());
+		setTitle("Atores");
 		
 		add(jtpCadastroPesquisa, new CC().width("400:100%:").height("300:100%:"));
 		
@@ -115,7 +120,7 @@ public class JFLanguage extends JFrame {
 	
 	private void getData() {
 		try {
-			tmLanguages.setData(connection.list());
+			tmActors.setData(connection.list());
 		} catch (Exception e) {
 			JOptionPaneUtils.showError("Ocorreu um erro ao buscar os dados do banco!");
 			e.printStackTrace();
@@ -123,11 +128,12 @@ public class JFLanguage extends JFrame {
 	}
 	
 	private void clearFields() {
-		language = null;
+		actor = null;
 		jlId.setVisible(false);
 		jtfId.setText("");
 		jtfId.setVisible(false);
-		jtfName.setText("");
+		jtfFirstName.setText("");
+		jtfLastName.setText("");
 		jlLastUpdate.setVisible(false);
 		jtfLastUpdate.setText("");
 		jtfLastUpdate.setVisible(false);
@@ -137,11 +143,12 @@ public class JFLanguage extends JFrame {
 	
 	private void populateView() {
 		jlId.setVisible(true);
-		jtfId.setText(String.valueOf(language.getLanguageId()));
+		jtfId.setText(String.valueOf(actor.getActorId()));
 		jtfId.setVisible(true);
-		jtfName.setText(language.getName());
+		jtfFirstName.setText(actor.getFirstName());
+		jtfLastName.setText(actor.getLastName());
 		jlLastUpdate.setVisible(true);
-		jtfLastUpdate.setText(language.getLastUpdate().format(DateTimeFormatter.ofPattern("dd/MM/YYYY HH:mm")));
+		jtfLastUpdate.setText(actor.getLastUpdate().format(DateTimeFormatter.ofPattern("dd/MM/YYYY HH:mm")));
 		jtfLastUpdate.setVisible(true);
 		jbSalvarAtualizar.setText("Atualizar");
 		jbDeletar.setEnabled(true);
@@ -158,26 +165,33 @@ public class JFLanguage extends JFrame {
 	private class ButtonSalvarAtualizarActionListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			String name = jtfName.getText().trim();
-			if (name.isEmpty()) {
+			String firstName = jtfFirstName.getText().trim();
+			String lastName = jtfLastName.getText().trim();
+			if (firstName.isEmpty()) {
 				JOptionPaneUtils.showWarning("O campo 'Nome' é obrigatório!");
 				return;
-			} else if (JOptionPaneUtils.showQuestionMessage("Deseja " + jbSalvarAtualizar.getText().toLowerCase() + " a linguagem?")) {
+			} else if (lastName.isEmpty()) {
+				JOptionPaneUtils.showWarning("O campo 'Sobrenome' é obrigatório!");
+				return;
+			} else if (JOptionPaneUtils.showQuestionMessage("Deseja " + jbSalvarAtualizar.getText().toLowerCase() + " o ator?")) {
 				try {
-					if (language == null) {
-						language = new Language();
-						language.setName(name);
-						connection.insert(language);
+					if (actor == null) {
+						actor = new Actor();
+						actor.setFirstName(firstName.toUpperCase());
+						actor.setLastName(lastName.toUpperCase());
+						connection.insert(actor);
 					} else {
-						language.setName(name);
-						connection.update(language);
+						actor.setFirstName(firstName.toUpperCase());
+						actor.setLastName(lastName.toUpperCase());
+						connection.update(actor);
 					}
-					JOptionPaneUtils.showMessage("Linguagem " + (jbSalvarAtualizar.getText().equals("Gravar") ? "gravada" : "atualizada")
-							+ " com sucesso!");
+					JOptionPaneUtils.showMessage("Ator " + (jbSalvarAtualizar.getText().equals("Gravar") ?
+							"gravado" : "atualizado") + " com sucesso!");
 					clearFields();
 					getData();
 				} catch (Exception ex) {
-					JOptionPaneUtils.showError("Não foi possivel " + jbSalvarAtualizar.getText().toLowerCase() + " a linguagem!");
+					JOptionPaneUtils.showError("Não foi possivel " + jbSalvarAtualizar.getText().toLowerCase() +
+							" o ator!");
 					ex.printStackTrace();
 				}
 			}
@@ -187,25 +201,25 @@ public class JFLanguage extends JFrame {
 	private class ButtonDeletarActionListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if (JOptionPaneUtils.showQuestionMessage("Deseja excluir a linguagem selecionada?")) {
+			if (JOptionPaneUtils.showQuestionMessage("Deseja excluir o ator selecionado?")) {
 				try {
-					connection.delete(language);
-					JOptionPaneUtils.showMessage("Linguagem excluída com sucesso!");
+					connection.delete(actor);
+					JOptionPaneUtils.showMessage("Ator excluído com sucesso!");
 					clearFields();
 					getData();
 				} catch (Exception ex) {
-					JOptionPaneUtils.showError("Não foi possível excluir a linguagem!");
+					JOptionPaneUtils.showError("Não foi possível excluir o ator!");
 					ex.printStackTrace();
 				}
 			}
 		}
 	}
 	
-	private class TableLanguagesMouseAdapter extends MouseAdapter {
+	private class TableActorsMouseAdapter extends MouseAdapter {
 		@Override
 		public void mouseReleased(MouseEvent e) {
 			if (e.getClickCount() > 1) {
-				language = tmLanguages.getValue(jtLanguages.getSelectedRow());
+				actor = tmActors.getValue(jtActors.getSelectedRow());
 				populateView();
 			}
 		}

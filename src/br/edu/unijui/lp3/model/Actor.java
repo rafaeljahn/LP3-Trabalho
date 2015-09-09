@@ -41,4 +41,9 @@ public class Actor {
 		this.lastUpdate = lastUpdate;
 	}
 	
+	@Override
+	public String toString() {
+		return firstName + " " + lastName;
+	}
+	
 }
